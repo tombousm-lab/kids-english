@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff4e8">
+  <meta name="description" content="3歳から楽しめる、無料の英語あそび。絵をタップして英語を聞こう！">
+  <title>えいごぽっけ | 3さいからのえいごあそび</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; color:#293752; background:#fff9f1; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at 8% 5%, #ffe0b7 0, transparent 30%),radial-gradient(circle at 94% 28%, #d9eeff 0, transparent 30%),#fff9f1; }
+    button { font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+    button:focus-visible { outline:4px solid #385deb; outline-offset:3px; }
+    .wrap { max-width:860px; margin:auto; padding:20px 18px 38px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:18px; }
+    .logo { font-size:clamp(23px,5vw,33px); font-weight:900; letter-spacing:-.06em; color:#fa725a; }
+    .star { background:#fff; border:2px solid #ffe3a9; border-radius:50px; padding:10px 17px; font-weight:900; font-size:19px; white-space:nowrap; }
+    .intro { font-size:17px; font-weight:700; color:#64748b; margin:0 0 18px; }
+    .tabs { display:grid; grid-template-columns:1fr 1fr; background:#fff; border-radius:21px; padding:6px; gap:7px; box-shadow:0 6px 18px #5c667417; }
+    .tab { border:0; border-radius:16px; background:transparent; padding:15px 8px; font-weight:900; font-size:19px; color:#748097; }
+    .tab.active { background:#ff8e72; color:#fff; box-shadow:0 4px 0 #ec745b; }
+    .categories { display:flex; gap:9px; margin:22px 0 15px; flex-wrap:wrap; }
+    .category { border:2px solid #e8eaf1; background:#fff; border-radius:40px; padding:11px 16px; font-size:16px; font-weight:850; }
+    .category.active { border-color:#ffb07a; background:#fff0dc; color:#a45024; }
+    .panel { border-radius:32px; background:#fff; box-shadow:0 14px 38px #68544518; padding:20px; }
+    .word-card { background:linear-gradient(145deg,#fff2d6,#ffeadc); border-radius:27px; min-height:350px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:5px; padding:22px; width:100%; border:0; color:inherit; }
+    .emoji { font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; font-size:clamp(112px,27vw,190px); line-height:1.35; filter:drop-shadow(0 8px 3px #aa7e3a15); }
+    .word { font-size:clamp(40px,9vw,68px); font-weight:950; letter-spacing:-.045em; color:#303a63; line-height:1.2; }
+    .meaning { font-size:19px; color:#8c6971; font-weight:700; }
+    .tap-hint { font-size:14px; color:#9d6e52; font-weight:750; margin-top:6px; }
+    .actions { display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:10px; margin-top:16px; }
+    .action { min-height:66px; border:0; border-radius:20px; background:#ebf0ff; color:#435680; font-size:19px; font-weight:900; }
+    .action.sound { background:#4b78f4; color:#fff; box-shadow:0 5px 0 #3158c5; }
+    .action:active,.answer:active { transform:translateY(2px); }
+    .count { margin:16px 0 0; text-align:center; color:#8892a4; font-weight:800; }
+    .quiz-head { text-align:center; padding:15px 5px 12px; }
+    .quiz-head h2 { font-size:clamp(23px,5vw,30px); margin:0 0 10px; }
+    .quiz-head p { font-size:18px; color:#68738c; margin:0; }
+    .quiz-choices { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:24px 0 16px; }
+    .answer { min-height:190px; border-radius:25px; border:3px solid #e7eafa; background:#f9faff; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; padding:10px 4px; color:#364465; }
+    .answer .picture { font-size:clamp(60px,12vw,100px); line-height:1.3; }
+    .answer .answer-name { font-size:clamp(15px,3vw,22px); font-weight:900; }
+    .answer.correct { border-color:#54b98b; background:#e9fff1; }
+    .answer.wrong { border-color:#ffac98; background:#fff1ed; }
+    .feedback { min-height:32px; font-size:21px; font-weight:900; color:#2e9b73; text-align:center; margin-bottom:14px; }
+    .quiz-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    .quiz-btn { min-height:61px; border:0; border-radius:19px; background:#4b78f4; color:white; font-size:18px; font-weight:900; padding:13px 23px; }
+    .quiz-btn.next { background:#f28d60; }
+    .quiz-btn:disabled { opacity:.45; cursor:default; }
+    footer { text-align:center; font-size:13px; color:#8993a4; line-height:1.7; margin-top:22px; }
+    [hidden] { display:none !important; }
+    @media (max-width:520px) { .wrap{padding:15px 12px 26px} .panel{padding:12px;border-radius:24px} .word-card{min-height:340px} .quiz-choices{gap:7px} .answer{min-height:150px;border-radius:18px} .action{font-size:16px;min-height:60px} }
+    @media (prefers-reduced-motion:no-preference) { .word-card:active .emoji{transform:scale(1.07)} .emoji{transition:transform .15s} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">🌈 えいごぽっけ</div>
+      <div class="star" aria-label="あつめた星"><span aria-hidden="true">⭐</span> <span id="stars">0</span></div>
+    </header>
+    <p class="intro">みて、きいて、タッチ！ はじめてのえいごあそび</p>
+    <nav class="tabs" aria-label="あそびをえらぶ">
+      <button class="tab active" id="learnTab" type="button" aria-pressed="true">🐣 おぼえる</button>
+      <button class="tab" id="quizTab" type="button" aria-pressed="false">🎯 クイズ</button>
+    </nav>
+    <div class="categories" id="categories" aria-label="ジャンルをえらぶ"></div>
+
+    <main>
+      <section class="panel" id="learnPanel" aria-label="えいごをおぼえる">
+        <button class="word-card" id="wordCard" type="button" aria-label="英語を読み上げる">
+          <span class="emoji" id="picture" aria-hidden="true">🐶</span>
+          <span class="word" id="word">Dog</span>
+          <span class="meaning" id="meaning">いぬ</span>
+          <span class="tap-hint">👆 タッチすると えいごが きこえるよ</span>
+        </button>
+        <div class="actions">
+          <button class="action" id="prevBtn" type="button">◀ まえ</button>
+          <button class="action sound" id="soundBtn" type="button">🔊 きく</button>
+          <button class="action" id="nextBtn" type="button">つぎ ▶</button>
+        </div>
+        <p class="count" id="count">1 / 6</p>
+      </section>
+
+      <section class="panel" id="quizPanel" aria-label="えいごクイズ" hidden>
+        <div class="quiz-head">
+          <h2>👂 どれかな？</h2>
+          <p>えいごを きいて えを タッチしてね！</p>
+        </div>
+        <div class="quiz-actions">
+          <button class="quiz-btn" type="button" id="repeatBtn">🔊 もういちど きく</button>
+        </div>
+        <div class="quiz-choices" id="choices"></div>
+        <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        <div class="quiz-actions">
+          <button class="quiz-btn next" type="button" id="nextQuestion" hidden>つぎの もんだい ▶</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>広告なし・会員登録なし・追加料金なし<br>声は端末の読み上げ機能を使います。音量を確認してね。</footer>
+  </div>
+
+  <script>
+    // ことばを増やす場合は、各ジャンルの配列に { en, ja, emoji } を追加してください。
+    const lessons = {
+      animals: { label: "🐾 どうぶつ", items: [
+        { en: "Dog", ja: "いぬ", emoji: "🐶" },
+        { en: "Cat", ja: "ねこ", emoji: "🐱" },
+        { en: "Rabbit", ja: "うさぎ", emoji: "🐰" },
+        { en: "Lion", ja: "ライオン", emoji: "🦁" },
+        { en: "Elephant", ja: "ぞう", emoji: "🐘" },
+        { en: "Bear", ja: "くま", emoji: "🐻" }
+      ] },
+      food: { label: "🍎 たべもの", items: [
+        { en: "Apple", ja: "りんご", emoji: "🍎" },
+        { en: "Banana", ja: "バナナ", emoji: "🍌" },
+        { en: "Strawberry", ja: "いちご", emoji: "🍓" },
+        { en: "Grapes", ja: "ぶどう", emoji: "🍇" },
+        { en: "Carrot", ja: "にんじん", emoji: "🥕" },
+        { en: "Bread", ja: "パン", emoji: "🍞" }
+      ] },
+      vehicles: { label: "🚗 のりもの", items: [
+        { en: "Car", ja: "くるま", emoji: "🚗" },
+        { en: "Bus", ja: "バス", emoji: "🚌" },
+        { en: "Train", ja: "でんしゃ", emoji: "🚆" },
+        { en: "Airplane", ja: "ひこうき", emoji: "✈️" },
+        { en: "Bicycle", ja: "じてんしゃ", emoji: "🚲" },
+        { en: "Boat", ja: "ふね", emoji: "⛵" }
+      ] }
+    };
+
+    let category = "animals";
+    let index = 0;
+    let mode = "learn";
+    let answer = null;
+    let completed = false;
+    let stars = 0;
+    try { stars = Math.max(0, Number(localStorage.getItem("eigo-pokke-stars")) || 0); } catch (_) {}
+    const $ = (id) => document.getElementById(id);
+    $("stars").textContent = stars;
+
+    function say(text) {
+      if (!("speechSynthesis" in window)) {
+        $("feedback").textContent = "このブラウザでは音声が使えません";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = 0.82;
+      utterance.pitch = 1.12;
+      const voices = window.speechSynthesis.getVoices();
+      const english = voices.find(v => v.lang.toLowerCase().startsWith("en-us")) ||
+                      voices.find(v => v.lang.toLowerCase().startsWith("en"));
+      if (english) utterance.voice = english;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function items() { return lessons[category].items; }
+    function renderCategories() {
+      $("categories").replaceChildren();
+      Object.entries(lessons).forEach(([key, value]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "category" + (category === key ? " active" : "");
+        button.textContent = value.label;
+        button.setAttribute("aria-pressed", String(category === key));
+        button.addEventListener("click", () => {
+          category = key;
+          index = 0;
+          renderCategories();
+          if (mode === "learn") renderWord();
+          else newQuestion();
+        });
+        $("categories").append(button);
+      });
+    }
+
+    function renderWord() {
+      const item = items()[index];
+      $("picture").textContent = item.emoji;
+      $("word").textContent = item.en;
+      $("meaning").textContent = item.ja;
+      $("wordCard").setAttribute("aria-label", item.ja + "の英語を聞く");
+      $("count").textContent = (index + 1) + " / " + items().length;
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      const learning = mode === "learn";
+      $("learnPanel").hidden = !learning;
+      $("quizPanel").hidden = learning;
+      $("learnTab").classList.toggle("active", learning);
+      $("quizTab").classList.toggle("active", !learning);
+      $("learnTab").setAttribute("aria-pressed", String(learning));
+      $("quizTab").setAttribute("aria-pressed", String(!learning));
+      window.speechSynthesis?.cancel();
+      if (learning) renderWord();
+      else newQuestion();
+    }
+
+    function newQuestion() {
+      const all = [...items()];
+      answer = all[Math.floor(Math.random() * all.length)];
+      const choices = [answer, ...all.filter(item => item !== answer).sort(() => Math.random() - .5).slice(0, 2)]
+        .sort(() => Math.random() - .5);
+      completed = false;
+      $("feedback").textContent = "";
+      $("nextQuestion").hidden = true;
+      $("choices").replaceChildren();
+      choices.forEach(item => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "answer";
+        button.setAttribute("aria-label", item.ja);
+        const picture = document.createElement("span");
+        picture.className = "picture";
+        picture.setAttribute("aria-hidden", "true");
+        picture.textContent = item.emoji;
+        const name = document.createElement("span");
+        name.className = "answer-name";
+        name.textContent = item.en;
+        button.append(picture, name);
+        button.addEventListener("click", () => checkAnswer(item, button));
+        $("choices").append(button);
+      });
+      // クイズ開始のタップ操作に続けて読み上げます。
+      say("Where is the " + answer.en.toLowerCase() + "?");
+    }
+
+    function checkAnswer(item, button) {
+      if (completed) return;
+      if (item === answer) {
+        completed = true;
+        button.classList.add("correct");
+        $("feedback").textContent = "⭐ せいかい！ Great job!";
+        $("nextQuestion").hidden = false;
+        say("Great job! " + answer.en + "!");
+        stars++;
+        $("stars").textContent = stars;
+        try { localStorage.setItem("eigo-pokke-stars", String(stars)); } catch (_) {}
+      } else {
+        button.classList.add("wrong");
+        $("feedback").textContent = "もういっかい タッチしてね！";
+        say("Try again!");
+      }
+    }
+
+    $("wordCard").addEventListener("click", () => say(items()[index].en));
+    $("soundBtn").addEventListener("click", () => say(items()[index].en));
+    $("prevBtn").addEventListener("click", () => { index = (index + items().length - 1) % items().length; renderWord(); say(items()[index].en); });
+    $("nextBtn").addEventListener("click", () => { index = (index + 1) % items().length; renderWord(); say(items()[index].en); });
+    $("learnTab").addEventListener("click", () => setMode("learn"));
+    $("quizTab").addEventListener("click", () => setMode("quiz"));
+    $("repeatBtn").addEventListener("click", () => say("Where is the " + answer.en.toLowerCase() + "?"));
+    $("nextQuestion").addEventListener("click", newQuestion);
+    renderCategories();
+    renderWord();
+  </script>
+</body>
+</html>
